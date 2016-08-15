@@ -564,7 +564,13 @@ Blog: www.codfusion.com--->
 	<cfif application.configBean.getSecureCookies() or len(application.configBean.getSessionCookiesExpires())>
 		<cftry>
 			<cfset var sessionData=getSession()>
-			<cfif isdefined('sessionData.CFID')>
+			<cfif isdefined('sessionData.jsessionid')>
+				<cfif application.configBean.getSessionCookiesExpires() EQ "" OR application.configBean.getSessionCookiesExpires() EQ "session">
+					<cfcookie name="JSESSIONID" value="#sessionData.jsessionid#" secure="#application.configBean.getSecureCookies()#" httpOnly="true"/>
+				<cfelse>
+					<cfcookie name="JSESSIONID" value="#sessionData.jsessionid#" expires="#application.configBean.getSessionCookiesExpires()#" secure="#application.configBean.getSecureCookies()#" httpOnly="true"/>
+				</cfif>
+			<cfelseif isdefined('sessionData.CFID')>
 				<!--- Lucee uses lowercase cookies the setCookie method allows it to maintain case--->
 				<cfif server.coldfusion.productname neq 'Coldfusion Server'>
 					<cfif application.configBean.getSessionCookiesExpires() EQ "" OR application.configBean.getSessionCookiesExpires() EQ "session">
@@ -582,13 +588,6 @@ Blog: www.codfusion.com--->
 						<cfcookie name="CFID" value="#sessionData.CFID#" expires="#application.configBean.getSessionCookiesExpires()#" secure="#application.configBean.getSecureCookies()#" httpOnly="true"/>
 						<cfcookie name="CFTOKEN" value="#sessionData.CFTOKEN#" expires="#application.configBean.getSessionCookiesExpires()#" secure="#application.configBean.getSecureCookies()#" httpOnly="true"/>
 					</cfif>
-				</cfif>
-			</cfif>
-			<cfif isdefined('sessionData.jsessionid')>
-				<cfif application.configBean.getSessionCookiesExpires() EQ "" OR application.configBean.getSessionCookiesExpires() EQ "session">
-					<cfcookie name="JSESSIONID" value="#sessionData.jsessionid#" secure="#application.configBean.getSecureCookies()#" httpOnly="true"/>
-				<cfelse>
-					<cfcookie name="JSESSIONID" value="#sessionData.jsessionid#" expires="#application.configBean.getSessionCookiesExpires()#" secure="#application.configBean.getSecureCookies()#" httpOnly="true"/>
 				</cfif>
 			</cfif>
 		<cfcatch></cfcatch>
